@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker</title>
+    <style>
+        /* CSS for styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Task Tracker</h1>
+        <form id="taskForm">
+            <!-- Task form inputs -->
+            <label for="taskName">Task name:</label><br>
+            <input type="text" id="taskName" name="taskName"><br>
+
+            <label for="taskDescription">Description:</label><br>
+            <textarea id="taskDescription" name="taskDescription"></textarea><br><br>
+
+            <label for="taskDeadline">Task deadline:</label><br>
+            <input type="date" id="taskDeadline" name="taskDeadline"><br>
+
+            <button type="submit">Add Task</button>
+        </form>
+        <table id="taskTable">
+            <!-- Task table content will go here -->
+        </table>
+    </div>
+
+    <script>
+        // JavaScript for functionality
+        let tasks = [];
+
+        const taskForm = document.getElementById("taskForm");
+        const taskTable = document.getElementById("taskTable");
+
+        // Function to handle form submissions
+        function handleSubmission(event) {
+            event.preventDefault(); // Prevent the form from reloading the page
+
+            // Get form input values
+            const taskName = document.getElementById('taskName').value;
+            const taskDescription = document.getElementById('taskDescription').value;
+            const taskDeadline = document.getElementById('taskDeadline').value;
+
+            // Validate input fields
+            if (!taskName || !taskDeadline) {
+                alert('Task name and deadline are required!');
+                return;
+            }
+
+            // Update the tasks array
+            tasks.push({
+                name: taskName,
+                description: taskDescription,
+                deadline: taskDeadline
+            });
+
+            // Call the render function to update the table
+            render();
+        }
+
+        // Function to render tasks in the table
+        function render() {
+            taskTable.innerHTML = tasks.map(task => `
+                <tr>
+                    <td>${task.name}</td>
+                    <td>${task.description}</td>
+                    <td>${task.deadline}</td>
+                    <td><button onclick="markTaskComplete(this)">Complete</button></td>
+                    <td><button onclick="removeTask(this)">Remove</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // Function to initialize the table
+        function init() {
+            taskTable.innerHTML = ''; // Clear the table
+            tasks = []; // Reset the tasks array
+            render(); // Call the render function
+        }
+
+        // Event listener for form submission
+        taskForm.addEventListener('submit', handleSubmission);
+
+        // Call the init function to set up the initial state of the app
+        init();
+
+        // Function to mark task as complete
+        function markTaskComplete(button) {
+            const row = button.closest("tr");
+            row.style.textDecoration = "line-through";  // Mark task as complete
+            button.disabled = true;  // Disable the button after completing
+        }
+
+        // Function to remove a task from the table
+        function removeTask(button) {
+            const row = button.closest("tr");
+            const taskName = row.cells[0].innerText;
+
+            // Remove the task from the tasks array
+            tasks = tasks.filter(task => task.name !== taskName);
+
+            // Re-render the table
+            render();
+        }
+    </script>
+</body>
+</html>
